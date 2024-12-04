@@ -5,10 +5,14 @@ import { authRouter } from "./routes/auth-router.js";
 import errorMiddleware from './middlewares/error-middleware.js';
 import { userRouter } from './routes/user-router.js';
 import { repertoireRouter } from './routes/repertoire-router.js';
+import cors from "cors";
 
 const app = express();
 const PORT = 3000;
 app.use(express.json());
+app.use(cors({
+    origin: true
+}))
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/repertoire", repertoireRouter)
