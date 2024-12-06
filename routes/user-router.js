@@ -4,6 +4,4 @@ import userController from "../controllers/user-controller.js";
 
 export const userRouter = Router();
 
-
 userRouter.get("/:id", authMiddleware, userController.findUser);
-
