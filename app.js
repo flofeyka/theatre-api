@@ -6,6 +6,7 @@ import errorMiddleware from './middlewares/error-middleware.js';
 import { userRouter } from './routes/user-router.js';
 import { repertoireRouter } from './routes/repertoire-router.js';
 import cors from "cors";
+import { sessionRouter } from './routes/session-router.js';
 
 const app = express();
 const PORT = 3000;
@@ -15,14 +16,15 @@ app.use(cors({
 }))
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
-app.use("/repertoire", repertoireRouter)
+app.use("/repertoire", repertoireRouter);
+app.use('/session', sessionRouter)
 
 app.use(errorMiddleware)
 
 const start = async () => {
     try {
         await sequelize.authenticate();
-        await sequelize.sync({force: true});
+        await sequelize.sync();
         app.listen(PORT, () => console.log(`Server listening on ${PORT} port`))
     } catch(e) {
         console.log(e);
