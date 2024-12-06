@@ -15,9 +15,11 @@ authRouter.post(
   validateMiddleware,
   authController.signUp
 );
-authRouter.post("/sign-in", 
+authRouter.post(
+  "/sign-in",
   body("email").isEmail().notEmpty(),
   body("password").isString().notEmpty(),
   validateMiddleware,
-  authController.signIn);
+  authController.signIn
+);
 authRouter.put("/refresh", authController.refresh);
