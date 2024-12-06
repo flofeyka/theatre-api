@@ -17,7 +17,8 @@ app.use(cors({
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/repertoire", repertoireRouter);
-app.use('/session', sessionRouter)
+app.use('/session', sessionRouter);
+app.use(express.static('static'));
 
 app.use(errorMiddleware)
 
