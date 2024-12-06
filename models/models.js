@@ -74,6 +74,10 @@ export const Repertoire = sequelize.define("repertoire", {
     defaultValue: 0,
     allowNull: false,
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  }
 });
 
 export const Session = sequelize.define("session", {
