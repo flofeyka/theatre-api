@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import ApiError from "../exceptions/api-error.js";
 import { Repertoire, Session } from "../models/models.js";
 import { v2 as cloudinary } from "cloudinary";
+import imagesService from "./images-service.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -34,8 +35,7 @@ class repertoireService {
     }
 
     if (repertoireFound.image) {
-      const publicId = existingUser.image.split('/').pop().split('.')[0];
-      await cloudinary.uploader.destroy(`images/${publicId}`)
+      await imagesService.deleteImage(repertoireFound.image);
     }
 
     if (
