@@ -21,12 +21,15 @@ class sessionService {
     };
   }
 
-  async getSessionById({session_id}) {
-    const session = await Session.findOne({ where: { id: session_id }, include: [Repertoire] });
+  async getSessionById({ session_id }) {
+    const session = await Session.findOne({
+      where: { id: session_id },
+      include: [Repertoire],
+    });
     return session;
   }
 
-  async deleteSession({session_id}) {
+  async deleteSession({ session_id }) {
     const session = await Session.destroy({ where: { id: session_id } });
 
     if (session === 0) {
@@ -42,14 +45,12 @@ class sessionService {
     return await Session.findAll({ where: { repertoireId } });
   }
 
-  async bookSession({session_id, row, place, user_id}) {
+  async bookSession({ session_id, row, place, user_id }) {
     const session = await Session.findOne({ where: { id: session_id } });
     if (!session) {
       throw ApiError.NotFound("Сеанс не найден");
     }
   }
-
-
 }
 
-export default new sessionService;
+export default new sessionService();

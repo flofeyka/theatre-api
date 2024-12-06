@@ -37,7 +37,7 @@ class repertoireService {
   async getAllRepertoires() {
     return await Repertoire.findAll({
       where: {},
-      order: [[{model: Session, as: "sessions"}, "time", "ASC"]],
+      order: [[{ model: Session, as: "sessions" }, "time", "ASC"]],
       include: [
         {
           model: Session,

@@ -6,7 +6,4 @@ export const repertoireRouter = Router();
 
 repertoireRouter.post("/", authMiddleware, repertoireController.addRepertoire);
 repertoireRouter.put("/", authMiddleware, repertoireController.editRepertoire);
-repertoireRouter.get(
-  "/",
-  repertoireController.getAllRepertoires
-);
+repertoireRouter.get("/", repertoireController.getAllRepertoires);
