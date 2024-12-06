@@ -12,7 +12,7 @@ class imageController {
     try {
       const { path: temporaryName } = req.file;
       const result = await imagesService.uploadImage(temporaryName);
-      return res.json(result.secure_url);
+      return res.json(result);
     } catch (e) {
       next(e);
     }
