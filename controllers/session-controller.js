@@ -61,6 +61,18 @@ class sessionController {
       next(e);
     }
   }
+
+  async cancelBooking(req, res, next) {
+    try {
+      const result = await sessionService.cancelBooking({
+        ...req.body,
+        user_id: req.user.id,
+      });
+      return res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export default new sessionController();

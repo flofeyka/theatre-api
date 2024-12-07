@@ -28,7 +28,7 @@ sessionRouter.post(
   sessionController.addSession
 );
 sessionRouter.delete(
-  "/:session_id",
+  "/delete/:session_id",
   param("session_id").isInt().notEmpty(),
   validateMiddleware,
   authMiddleware,
@@ -49,4 +49,12 @@ sessionRouter.post(
   validateMiddleware,
   authMiddleware,
   sessionController.bookSession
+);
+sessionRouter.delete(
+  "/cancel-booking/",
+  body("session_id").isInt().notEmpty(),
+  body("position").isArray().notEmpty(),
+  validateMiddleware,
+  authMiddleware,
+  sessionController.cancelBooking
 );
