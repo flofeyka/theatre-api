@@ -44,6 +44,10 @@ export const User = sequelize.define("user", {
     type: DataTypes.DATE,
     allowNull: false,
   },
+  occupiedPlaces: {
+    type: DataTypes.ARRAY(DataTypes.JSON),
+    defaultValue: []
+  },
 });
 
 User.hasOne(Token, { onDelete: "cascade" });
@@ -77,7 +81,7 @@ export const Repertoire = sequelize.define("repertoire", {
   image: {
     type: DataTypes.STRING,
     allowNull: true,
-  }
+  },
 });
 
 export const Session = sequelize.define("session", {
@@ -94,6 +98,10 @@ export const Session = sequelize.define("session", {
   price: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  occupiedPlaces: {
+    type: DataTypes.ARRAY(DataTypes.JSON),
+    defaultValue: []
   },
 });
 

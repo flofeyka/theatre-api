@@ -49,6 +49,18 @@ class sessionController {
       next(e);
     }
   }
+
+  async bookSession(req, res, next) {
+    try {
+      const result = await sessionService.bookSession({
+        ...req.body,
+        user_id: req.user.id,
+      });
+      return res.json(result);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 export default new sessionController();

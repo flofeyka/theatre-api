@@ -1,5 +1,6 @@
 import ApiError from "../exceptions/api-error.js";
-import { Repertoire, Session } from "../models/models.js";
+import { Repertoire, Session, User } from "../models/models.js";
+import userService from "./user-service.js";
 
 class sessionService {
   async addSession({ repertoireId, time, price }) {
@@ -45,11 +46,65 @@ class sessionService {
     return await Session.findAll({ where: { repertoireId } });
   }
 
+  isValidPlace(row, place) {
+    const maxPlacesPerRow = {
+      1: 26,
+      2: 26,
+      3: 26,
+      4: 28,
+      5: 28,
+      6: 28,
+      7: 30,
+      8: 30,
+      9: 34,
+      10: 34,
+      11: 34,
+      12: 32,
+      13: 32,
+      14: 30,
+      15: 30,
+      16: 30,
+    };
+
+    const maxPlaces = maxPlacesPerRow[row];
+    if (!maxPlaces) {
+      return false;
+    }
+    return place > 0 && place <= maxPlaces;
+  }
+
   async bookSession({ session_id, row, place, user_id }) {
     const session = await Session.findOne({ where: { id: session_id } });
     if (!session) {
       throw ApiError.NotFound("Сеанс не найден");
     }
+
+    if (!this.isValidPlace(row, place)) {
+      throw ApiError.BadRequest("Неправильный формат ряда и места.");
+    }
+
+    const user = await User.findByPk(user_id);
+    console.log(user);
+    if (
+      session.occupiedPlaces.find(
+        (item) => item.row === row && item.place === place
+      ) ||
+      user.occupiedPlaces.find(
+        (item) =>
+          item.row === row &&
+          item.place === place &&
+          item.session_id === session_id
+      )
+    ) {
+      throw ApiError.BadRequest("Эти места уже забронированы");
+    }
+    user.occupiedPlaces = [...user.occupiedPlaces, { row, place, session_id }];
+    session.occupiedPlaces = [
+      ...session.occupiedPlaces,
+      { row, place, session_id },
+    ];
+    await user.save();
+    return await session.save();
   }
 }
 

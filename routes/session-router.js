@@ -37,3 +37,12 @@ sessionRouter.put(
   authMiddleware,
   sessionController.editSession
 );
+sessionRouter.post(
+  "/book",
+  body("session_id").isInt().notEmpty(),
+  body("row").isInt().notEmpty(),
+  body("place").isInt().notEmpty(),
+  validateMiddleware,
+  authMiddleware,
+  sessionController.bookSession
+);
