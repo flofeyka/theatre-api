@@ -81,7 +81,7 @@ class sessionService {
       4: 26,
       5: 28,
       6: 28,
-      7: 28
+      7: 28,
     };
 
     const maxPlaces = maxPlacesPerRow[row];
@@ -99,7 +99,11 @@ class sessionService {
 
     if (
       !position
-        .map((item) => item.type === "hall" ? this.isValidHallPlace(item.row, item.place) : this.isValidBalconyPlace(item.row, item.place))
+        .map((item) =>
+          item.type === "hall"
+            ? this.isValidHallPlace(item.row, item.place)
+            : this.isValidBalconyPlace(item.row, item.place)
+        )
         .every((item) => item)
     ) {
       throw ApiError.BadRequest("Неправильный формат ряда и места.");
@@ -136,6 +140,58 @@ class sessionService {
     ];
     await user.save();
     return await session.save();
+  }
+
+  async cancelBooking({ session_id, position, user_id }) {
+    const session = await Session.findOne({ where: { id: session_id } });
+    if (!session) {
+      throw ApiError.NotFound("Сеанс не найден");
+    }
+
+    const user = await User.findByPk(user_id);
+    if (
+      !user.occupiedPlaces.find(
+        (item) =>
+          item.session_id === session_id &&
+          position.find((i) => i.row === item.row && i.place === item.place && i.type === item.type)
+      )
+    ) {
+      throw ApiError.BadRequest("Вы не забронировали эти места");
+    }
+
+    
+    
+    const sessionResult = await Session.update({
+      occupiedPlaces: session.occupiedPlaces.filter(
+        (item) =>
+          !position.find(
+            (i) =>
+              i.row === item.row && i.place === item.place && i.type === item.type
+          )
+        )
+      }, {
+        where: {
+          id: session.id
+        }
+      });
+      console.log(session_id)
+      const userResult = await User.update({
+        occupiedPlaces: user.occupiedPlaces.filter(
+          (item) =>
+            !position.find(
+              (i) =>
+                i.row === item.row && i.place === item.place && i.type === item.type && item.session_id === session.id
+            )
+        ),
+      }, {where: { id: user_id }});
+    if(sessionResult[0] === 0 || userResult[0] === 0) {
+      throw ApiError.NotFound("Результаты не обновлены");
+    }
+
+    return {
+      message: "Места успешно отменены",
+      success: true
+    }
   }
 }
 
