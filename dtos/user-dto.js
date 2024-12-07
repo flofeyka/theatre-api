@@ -2,6 +2,7 @@ class UserDto {
   id;
   fullName;
   birth;
+  occupiedPlaces;
   createdAt;
 
   constructor(model) {
@@ -9,6 +10,7 @@ class UserDto {
     this.fullName = model.fullName;
     this.birth = model.birth;
     this.createdAt = model.createdAt;
+    this.occupiedPlaces = model.occupiedPlaces;
   }
 }
 
