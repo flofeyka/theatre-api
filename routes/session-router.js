@@ -13,7 +13,7 @@ sessionRouter.get(
   sessionController.getSessionById
 );
 sessionRouter.get(
-  "/repertoireId",
+  "/all/:repertoireId",
   param("repertoireId").isInt().notEmpty(),
   validateMiddleware,
   sessionController.getAllSessions
