@@ -43,7 +43,7 @@ class sessionController {
 
   async getAllSessions(req, res, next) {
     try {
-      const result = await sessionService.getAllSessions(req.body);
+      const result = await sessionService.getAllSessions(req.params);
       return res.json(result);
     } catch (e) {
       next(e);

@@ -12,7 +12,12 @@ sessionRouter.get(
   validateMiddleware,
   sessionController.getSessionById
 );
-sessionRouter.get("/", sessionController.getAllSessions);
+sessionRouter.get(
+  "/repertoireId",
+  param("repertoireId").isInt().notEmpty(),
+  validateMiddleware,
+  sessionController.getAllSessions
+);
 sessionRouter.post(
   "/",
   body("repertoireId").isInt().notEmpty(),
