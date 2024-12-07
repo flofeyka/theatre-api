@@ -46,7 +46,7 @@ class sessionService {
     return await Session.findAll({ where: { repertoireId } });
   }
 
-  isValidPlace(row, place) {
+  isValidHallPlace(row, place) {
     const maxPlacesPerRow = {
       1: 26,
       2: 26,
@@ -73,6 +73,24 @@ class sessionService {
     return place > 0 && place <= maxPlaces;
   }
 
+  isValidBalconyPlace(row, place) {
+    const maxPlacesPerRow = {
+      1: 26,
+      2: 26,
+      3: 26,
+      4: 26,
+      5: 28,
+      6: 28,
+      7: 28
+    };
+
+    const maxPlaces = maxPlacesPerRow[row];
+    if (!maxPlaces) {
+      return false;
+    }
+    return place > 0 && place <= maxPlaces;
+  }
+
   async bookSession({ session_id, position, user_id }) {
     const session = await Session.findOne({ where: { id: session_id } });
     if (!session) {
@@ -81,7 +99,7 @@ class sessionService {
 
     if (
       !position
-        .map((item) => this.isValidPlace(item.row, item.place))
+        .map((item) => item.type === "hall" ? this.isValidHallPlace(item.row, item.place) : this.isValidBalconyPlace(item.row, item.place))
         .every((item) => item)
     ) {
       throw ApiError.BadRequest("Неправильный формат ряда и места.");
