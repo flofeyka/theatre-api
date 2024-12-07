@@ -1,7 +1,7 @@
 import { Router } from "express";
-import authMiddleware from "../middlewares/auth-middleware.js";
+import { body, param } from "express-validator";
 import sessionController from "../controllers/session-controller.js";
-import { body, param, validationResult } from "express-validator";
+import authMiddleware from "../middlewares/auth-middleware.js";
 import validateMiddleware from "../middlewares/validate-middleware.js";
 
 export const sessionRouter = Router();
@@ -45,8 +45,7 @@ sessionRouter.put(
 sessionRouter.post(
   "/book",
   body("session_id").isInt().notEmpty(),
-  body("row").isInt().notEmpty(),
-  body("place").isInt().notEmpty(),
+  body("position").isArray().notEmpty(),
   validateMiddleware,
   authMiddleware,
   sessionController.bookSession
