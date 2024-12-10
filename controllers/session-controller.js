@@ -50,6 +50,15 @@ class sessionController {
     }
   }
 
+  async getBookingSessions(req, res, next) {
+    try {
+      const result = await sessionService.getBookingSessions(req.user.id);
+      return res.json(result);
+    } catch(e) {
+      next(e);
+    }
+  }
+
   async bookSession(req, res, next) {
     try {
       const result = await sessionService.bookSession({
