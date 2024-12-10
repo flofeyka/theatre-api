@@ -19,7 +19,6 @@ app.use(
     origin: true,
   })
 );
-// app.use(fileUpload());
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/repertoire", repertoireRouter);
