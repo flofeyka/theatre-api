@@ -46,7 +46,11 @@ export const User = sequelize.define("user", {
   },
   occupiedPlaces: {
     type: DataTypes.ARRAY(DataTypes.JSON),
-    defaultValue: []
+    defaultValue: [],
+  },
+  role: {
+    type: DataTypes.STRING,
+    defaultValue: "user",
   },
 });
 
@@ -101,7 +105,7 @@ export const Session = sequelize.define("session", {
   },
   occupiedPlaces: {
     type: DataTypes.ARRAY(DataTypes.JSON),
-    defaultValue: []
+    defaultValue: [],
   },
 });
 

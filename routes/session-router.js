@@ -3,6 +3,7 @@ import { body, param } from "express-validator";
 import sessionController from "../controllers/session-controller.js";
 import authMiddleware from "../middlewares/auth-middleware.js";
 import validateMiddleware from "../middlewares/validate-middleware.js";
+import roleMiddleware from "../middlewares/role-middleware.js";
 
 export const sessionRouter = Router();
 
@@ -25,6 +26,7 @@ sessionRouter.post(
   body("price").isInt().notEmpty(),
   validateMiddleware,
   authMiddleware,
+  roleMiddleware('admin'),
   sessionController.addSession
 );
 sessionRouter.delete(
@@ -32,6 +34,7 @@ sessionRouter.delete(
   param("session_id").isInt().notEmpty(),
   validateMiddleware,
   authMiddleware,
+  roleMiddleware('admin'),
   sessionController.deleteSession
 );
 sessionRouter.put(
@@ -40,6 +43,7 @@ sessionRouter.put(
   body("price").isInt().notEmpty(),
   validateMiddleware,
   authMiddleware,
+  roleMiddleware('admin'),
   sessionController.editSession
 );
 sessionRouter.get(
