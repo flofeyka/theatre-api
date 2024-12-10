@@ -4,6 +4,7 @@ import tokenService from "./token-service.js";
 import userService from "./user-service.js";
 import bcrypt from "bcrypt";
 import ApiError from "../exceptions/api-error.js";
+import UserDto from "../dtos/user-dto.js";
 
 class authService {
   async signIn({ email, password }) {
@@ -25,7 +26,7 @@ class authService {
     await tokenService.saveToken(refreshToken, userFound);
 
     return {
-      user: userFound,
+      user: new UserDto(userFound),
       accessToken,
       refreshToken,
     };
@@ -63,7 +64,7 @@ class authService {
     await tokenService.saveToken(refreshToken, userCreated);
 
     return {
-      user: userCreated,
+      user: new UserDto(userCreated),
       accessToken,
       refreshToken,
     };
@@ -82,7 +83,7 @@ class authService {
     await tokenService.saveToken(refreshToken, tokenData.user);
 
     return {
-      user: tokenData.user,
+      user: new UserDto(tokenData.user),
       accessToken,
       refreshToken,
     };
