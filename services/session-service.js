@@ -50,7 +50,9 @@ class sessionService {
   }
 
   async getAllSessions({ repertoireId }) {
-    return await Session.findAll({ where: { repertoireId } });
+    return await Session.findAll({ where: { repertoireId, time: {
+      [Op.gte]: new Date()
+    } } });
   }
 
   isValidHallPlace(row, place) {
