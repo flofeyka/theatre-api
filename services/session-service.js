@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import ApiError from "../exceptions/api-error.js";
 import { Repertoire, Session, User } from "../models/models.js";
 import userService from "./user-service.js";
+import { createTransport } from "nodemailer";
 
 class sessionService {
   async addSession({ repertoireId, time, price }) {
@@ -138,7 +139,6 @@ class sessionService {
     }
 
     const user = await User.findByPk(user_id);
-    console.log(user);
     if (
       session.occupiedPlaces.find((item) =>
         position.find((i) => i.row === item.row && i.place === item.place)
@@ -166,6 +166,30 @@ class sessionService {
         session_id,
       })),
     ];
+
+    const transporter = createTransport({
+      port: 465, // true for 465, false for other ports
+      host: process.env.EMAIL_HOST,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+      secure: true,
+    });
+    const mailData = {
+      from: process.env.EMAIL, // sender address
+      to: user.email, // list of receivers
+      subject: "Билеты были успешно забронированы",
+      text: `Здравствуйте! Ваши билеты были успешно забронированы. Спасибо, что выбрали нас!\n
+        Ваши места\n
+        ${position
+          .map((item) => `${item.row} ряд, место ${item.place}`)
+          .join(", ")}
+        `,
+    };
+    await transporter.sendMail(mailData, function (err, info) {
+      if (err) console.log(err);
+    });
     await user.save();
     return await session.save();
   }
