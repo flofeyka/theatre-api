@@ -110,6 +110,7 @@ class sessionService {
         return {
           repertoire_id: sessionFound.repertoire.id,
           title: sessionFound.repertoire.title,
+          time: sessionFound.time,
           ...item,
         };
       })
