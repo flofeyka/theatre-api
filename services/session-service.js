@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import ApiError from "../exceptions/api-error.js";
 import { Repertoire, Session, User } from "../models/models.js";
 import userService from "./user-service.js";
@@ -24,7 +25,12 @@ class sessionService {
 
   async getSessionById({ session_id }) {
     const session = await Session.findOne({
-      where: { id: session_id },
+      where: {
+        id: session_id,
+        time: {
+          [Op.gte]: new Date(),
+        },
+      },
       include: [Repertoire],
     });
     return session;
@@ -91,8 +97,20 @@ class sessionService {
     return place > 0 && place <= maxPlaces;
   }
 
+  async getBookingSessions(user_id) {
+    const user = await User.findByPk(user_id);
+    const bookedSessions = await Promise.all(
+      user.occupiedPlaces.map(
+        async (item) =>
+          await this.getSessionById({ session_id: item.session_id })
+      )
+    );
+
+    return bookedSessions.filter((item) => item);
+  }
+
   async bookSession({ session_id, position, user_id }) {
-    const session = await Session.findOne({ where: { id: session_id } });
+    const session = await this.getSessionById({session_id});
     if (!session) {
       throw ApiError.NotFound("Сеанс не найден");
     }
@@ -153,45 +171,58 @@ class sessionService {
       !user.occupiedPlaces.find(
         (item) =>
           item.session_id === session_id &&
-          position.find((i) => i.row === item.row && i.place === item.place && i.type === item.type)
+          position.find(
+            (i) =>
+              i.row === item.row &&
+              i.place === item.place &&
+              i.type === item.type
+          )
       )
     ) {
       throw ApiError.BadRequest("Вы не забронировали эти места");
     }
 
-    
-    
-    const sessionResult = await Session.update({
-      occupiedPlaces: session.occupiedPlaces.filter(
-        (item) =>
-          !position.find(
-            (i) =>
-              i.row === item.row && i.place === item.place && i.type === item.type
-          )
-        )
-      }, {
+    const sessionResult = await Session.update(
+      {
+        occupiedPlaces: session.occupiedPlaces.filter(
+          (item) =>
+            !position.find(
+              (i) =>
+                i.row === item.row &&
+                i.place === item.place &&
+                i.type === item.type
+            )
+        ),
+      },
+      {
         where: {
-          id: session.id
-        }
-      });
-      console.log(session_id)
-      const userResult = await User.update({
+          id: session.id,
+        },
+      }
+    );
+    const userResult = await User.update(
+      {
         occupiedPlaces: user.occupiedPlaces.filter(
           (item) =>
             !position.find(
               (i) =>
-                i.row === item.row && i.place === item.place && i.type === item.type && item.session_id === session.id
+                i.row === item.row &&
+                i.place === item.place &&
+                i.type === item.type &&
+                item.session_id === session.id
             )
         ),
-      }, {where: { id: user_id }});
-    if(sessionResult[0] === 0 || userResult[0] === 0) {
+      },
+      { where: { id: user_id } }
+    );
+    if (sessionResult[0] === 0 || userResult[0] === 0) {
       throw ApiError.NotFound("Результаты не обновлены");
     }
 
     return {
       message: "Места успешно отменены",
-      success: true
-    }
+      success: true,
+    };
   }
 }
 

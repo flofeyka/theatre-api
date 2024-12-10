@@ -42,6 +42,11 @@ sessionRouter.put(
   authMiddleware,
   sessionController.editSession
 );
+sessionRouter.get(
+  "/book/all",
+  authMiddleware,
+  sessionController.getBookingSessions
+)
 sessionRouter.post(
   "/book",
   body("session_id").isInt().notEmpty(),
