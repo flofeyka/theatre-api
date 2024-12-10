@@ -100,17 +100,26 @@ class sessionService {
   async getBookingSessions(user_id) {
     const user = await User.findByPk(user_id);
     const bookedSessions = await Promise.all(
-      user.occupiedPlaces.map(
-        async (item) =>
-          await this.getSessionById({ session_id: item.session_id })
-      )
+      user.occupiedPlaces.map(async (item) => {
+        const sessionFound = await this.getSessionById({
+          session_id: item.session_id,
+        });
+        if (!sessionFound) {
+          return undefined;
+        }
+        return {
+          repertoire_id: sessionFound.repertoire.id,
+          title: sessionFound.repertoire.title,
+          ...item,
+        };
+      })
     );
 
     return bookedSessions.filter((item) => item);
   }
 
   async bookSession({ session_id, position, user_id }) {
-    const session = await this.getSessionById({session_id});
+    const session = await this.getSessionById({ session_id });
     if (!session) {
       throw ApiError.NotFound("Сеанс не найден");
     }
